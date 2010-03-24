@@ -63,15 +63,15 @@ difference(_Ref, _OtherRef) ->
 -ifdef(TEST).
 
 basic_test() ->
-    {ok, Ref} = new(5, 0.99, 123),
+    {ok, Ref} = new(5, 0.01, 123),
     0 = elements(Ref),
     insert(Ref, <<"abcdef">>),
     true = contains(Ref, <<"abcdef">>),
     false = contains(Ref, <<"zzzzzz">>).
 
 union_test() ->
-    {ok, Ref} = new(5, 0.99, 123),
-    {ok, Ref2} = new(5, 0.99, 123),
+    {ok, Ref} = new(5, 0.01, 123),
+    {ok, Ref2} = new(5, 0.01, 123),
     insert(Ref, <<"abcdef">>),
     false = contains(Ref2, <<"abcdef">>),
     union(Ref2, Ref),
