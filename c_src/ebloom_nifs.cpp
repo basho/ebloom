@@ -1,0 +1,111 @@
+
+#include "ebloom_nifs.h"
+#include "bloom_filter.hpp"
+
+static ErlNifResourceType* BLOOM_FILTER_RESOURCE;
+
+typedef struct
+{
+    bloom_filter* filter;
+} bhandle;
+
+extern "C"
+{
+    ERL_NIF_TERM new_filter(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+    ERL_NIF_TERM insert(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+    ERL_NIF_TERM contains(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+    void filter_dtor(ErlNifEnv* env, void* arg);
+
+    int on_load(ErlNifEnv* env, void** priv_data, ERL_NIF_TERM load_info);
+
+    static ErlNifFunc nif_funcs[] =
+    {
+        {"new_filter", 3, new_filter},
+        {"insert",     2, insert},
+        {"contains",   2, contains}
+    };
+
+    ERL_NIF_INIT(ebloom, nif_funcs, &on_load, NULL, NULL, NULL);
+};
+
+ERL_NIF_TERM new_filter(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+{
+    long predicted_element_count;
+    double false_positive_probability;
+    long random_seed;
+
+    if (enif_get_long(env, argv[0], &predicted_element_count) &&
+        enif_get_double(env, argv[1], &false_positive_probability) &&
+        enif_get_long(env, argv[2], &random_seed))
+    {
+        bhandle* handle = (bhandle*)enif_alloc_resource(env, BLOOM_FILTER_RESOURCE,
+                                                        sizeof(bhandle));
+        handle->filter = new bloom_filter(predicted_element_count,
+                                          false_positive_probability,
+                                          random_seed);
+        ERL_NIF_TERM result = enif_make_resource(env, handle);
+        enif_release_resource(env, handle);
+        return enif_make_tuple2(env, enif_make_atom(env, "ok"), result);
+    }
+    else
+    {
+        return enif_make_badarg(env);
+    }
+}
+
+ERL_NIF_TERM insert(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+{
+    ErlNifBinary data;
+    bhandle* handle;
+    if (enif_get_resource(env, argv[0], BLOOM_FILTER_RESOURCE, (void**)&handle) &&
+        enif_inspect_binary(env, argv[1], &data))
+    {
+        handle->filter->insert(data.data, data.size);
+        return enif_make_atom(env, "ok");
+    }
+    else
+    {
+        return enif_make_badarg(env);
+    }
+}
+
+ERL_NIF_TERM contains(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+{
+    ErlNifBinary data;
+    bhandle* handle;
+    if (enif_get_resource(env, argv[0], BLOOM_FILTER_RESOURCE, (void**)&handle) &&
+        enif_inspect_binary(env, argv[1], &data))
+    {
+        if (handle->filter->contains(data.data, data.size))
+        {
+            return enif_make_atom(env, "true");
+        }
+        else
+        {
+            return enif_make_atom(env, "false");
+        }
+    }
+    else
+    {
+        return enif_make_badarg(env);
+    }
+}
+
+void filter_dtor(ErlNifEnv* env, void* arg)
+{
+    bhandle* handle = (bhandle*)arg;
+    delete handle->filter;
+}
+
+int on_load(ErlNifEnv* env, void** priv_data, ERL_NIF_TERM load_info)
+{
+    ErlNifResourceFlags flags = (ErlNifResourceFlags)(ERL_NIF_RT_CREATE | ERL_NIF_RT_TAKEOVER);
+    BLOOM_FILTER_RESOURCE = enif_open_resource_type(env, "bloom_filter_resource",
+                                                    &filter_dtor,
+                                                    flags,
+                                                    0);
+    return 0;
+}
+
+
+
