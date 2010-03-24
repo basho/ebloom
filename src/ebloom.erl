@@ -1,8 +1,15 @@
 -module(ebloom).
 
--export([new_filter/3,
+-export([new/3,
          insert/2,
-         contains/2]).
+         contains/2,
+         clear/1,
+         size/1,
+         elements/1,
+         effective_fpp/1,
+         intersect/2,
+         union/2,
+         difference/2]).
 
 -on_load(init/0).
 
@@ -19,13 +26,34 @@ init() ->
     end,
     erlang:load_nif(SoName, 0).
 
-new_filter(_Count, _FalseProb, _Seed) ->
+new(_Count, _FalseProb, _Seed) ->
     "NIF library not loaded".
 
 insert(_Ref, _Bin) ->
     "NIF library not loaded".
 
 contains(_Ref, _Bin) ->
+    "NIF library not loaded".
+
+clear(_Ref) ->
+    "NIF library not loaded".
+
+size(_Ref) ->
+    "NIF library not loaded".
+
+elements(_Ref) ->
+    "NIF library not loaded".
+
+effective_fpp(_Ref) ->
+    "NIF library not loaded".
+
+intersect(_Ref, _OtherRef) ->
+    "NIF library not loaded".
+
+union(_Ref, _OtherRef) ->
+    "NIF library not loaded".
+
+difference(_Ref, _OtherRef) ->
     "NIF library not loaded".
 
 
@@ -35,9 +63,18 @@ contains(_Ref, _Bin) ->
 -ifdef(TEST).
 
 basic_test() ->
-    {ok, Ref} = new_filter(5, 0.99, 123),
+    {ok, Ref} = new(5, 0.99, 123),
+    0 = elements(Ref),
     insert(Ref, <<"abcdef">>),
     true = contains(Ref, <<"abcdef">>),
     false = contains(Ref, <<"zzzzzz">>).
+
+union_test() ->
+    {ok, Ref} = new(5, 0.99, 123),
+    {ok, Ref2} = new(5, 0.99, 123),
+    insert(Ref, <<"abcdef">>),
+    false = contains(Ref2, <<"abcdef">>),
+    union(Ref2, Ref),
+    true = contains(Ref2, <<"abcdef">>).
 
 -endif.
