@@ -1,5 +1,5 @@
 -module(ebloom).
-
+-author('Dave Smith <dizzyd@dizzyd.com>').
 -export([new/3,
          insert/2,
          contains/2,
