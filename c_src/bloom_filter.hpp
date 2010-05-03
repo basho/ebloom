@@ -276,14 +276,19 @@ public:
 
    const cell_type* table() const { return bit_table_; }
    
+   inline size_t serialized_size() const 
+   {
+     return ((table_size_/bits_per_char)+(6*sizeof(size_t))+(salt_.size()*sizeof(bloom_type)));
+   }
+
+
    inline void serialize(unsigned char** data, unsigned int* len)
    {
-      unsigned int buf_sz = (sizeof(unsigned char) * (table_size_ / bits_per_char)) + 
-        (6 * sizeof(size_t)) + (salt_.size()*sizeof(bloom_type)) + 1000;
+      size_t buf_sz = serialized_size();
       char *buffer = new char[ buf_sz ];
       serializer s(buffer, buf_sz);
       s.clear();
-      
+
       s << salt_count_;
       s << table_size_;
       s << predicted_element_count_;
@@ -298,12 +303,8 @@ public:
       for(std::size_t i=0; i<(table_size_ / bits_per_char); i++) {
          s << bit_table_[i];
       }
-      
       *len = s.length();
-      std::cout << " len = " << *len << std::endl;
-      *data = (unsigned char *)malloc(s.length());
       s.write_to_buffer(reinterpret_cast<char *>(*data));
-      
       delete[] buffer;
    }
 

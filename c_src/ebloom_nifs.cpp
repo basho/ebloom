@@ -242,13 +242,9 @@ ERL_NIF_TERM serialize(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
     bhandle* handle;
     if (enif_get_resource(env, argv[0], BLOOM_FILTER_RESOURCE, (void**)&handle))
     {
-        unsigned int data_len;
-        unsigned char* data;
-        handle->filter->serialize(&data, &data_len);
         ErlNifBinary bin;
-        enif_alloc_binary(env, data_len, &bin);
-        memcpy(bin.data, data, data_len);
-        free((void *)data);
+        enif_alloc_binary(env, handle->filter->serialized_size(), &bin);        
+        handle->filter->serialize(&bin.data, &bin.size);
         return enif_make_binary(env, &bin);
     }
     else

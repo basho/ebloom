@@ -104,4 +104,15 @@ union_test() ->
     union(Ref2, Ref),
     true = contains(Ref2, <<"abcdef">>).
 
+serialize_test() ->
+    {ok, Ref} = new(5, 0.01, 123),
+    {ok, Ref2} = new(5, 0.01, 123),
+    Bin = serialize(Ref),
+    Bin2 = serialize(Ref2),
+    true = (Bin =:= Bin2),
+    insert(Ref, <<"abcdef">>),
+    Bin3 = serialize(Ref),
+    {ok, Ref3} = deserialize(Bin3),
+    true = contains(Ref3, <<"abcdef">>).
+
 -endif.
