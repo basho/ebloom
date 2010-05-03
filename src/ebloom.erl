@@ -29,7 +29,9 @@
          effective_fpp/1,
          intersect/2,
          union/2,
-         difference/2]).
+         difference/2,
+         serialize/1,
+         deserialize/2]).
 
 -on_load(init/0).
 
@@ -76,6 +78,11 @@ union(_Ref, _OtherRef) ->
 difference(_Ref, _OtherRef) ->
     "NIF library not loaded".
 
+serialize(_Ref) ->
+    "NIF library not loaded".
+
+deserialize(_Ref, _Bin) ->
+    "NIF library not loaded".
 
 %% ===================================================================
 %% EUnit tests

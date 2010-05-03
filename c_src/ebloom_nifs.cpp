@@ -44,6 +44,9 @@ extern "C"
     ERL_NIF_TERM filter_union(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
     ERL_NIF_TERM filter_difference(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
 
+    ERL_NIF_TERM serialize(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+    ERL_NIF_TERM deserialize(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+
     void filter_dtor(ErlNifEnv* env, void* arg);
 
     int on_load(ErlNifEnv* env, void** priv_data, ERL_NIF_TERM load_info);
@@ -59,7 +62,9 @@ extern "C"
         {"effective_fpp", 1, effective_fpp},
         {"intersect",     2, filter_intersect},
         {"union",         2, filter_union},
-        {"difference",    2, filter_difference}
+        {"difference",    2, filter_difference},
+        {"serialize",     1, serialize},
+        {"deserialize",   2, deserialize}
     };
 
     ERL_NIF_INIT(ebloom, nif_funcs, &on_load, NULL, NULL, NULL);
@@ -224,6 +229,42 @@ ERL_NIF_TERM filter_difference(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv
         enif_get_resource(env, argv[1], BLOOM_FILTER_RESOURCE, (void**)&handle2))
     {
         *(handle->filter) ^= *(handle2->filter);
+        return enif_make_atom(env, "ok");
+    }
+    else
+    {
+        return enif_make_badarg(env);
+    }
+}
+
+ERL_NIF_TERM serialize(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+{
+    bhandle* handle;
+    if (enif_get_resource(env, argv[0], BLOOM_FILTER_RESOURCE, (void**)&handle))
+    {
+        unsigned int* data_len;
+        unsigned char* data;
+        handle->filter->serialize(data, data_len);
+        
+        ErlNifBinary bin;
+        enif_alloc_binary(env, (unsigned)*data_len, &bin);
+        memcpy(bin.data, data, (unsigned)*data_len);
+        return enif_make_binary(env, &bin);
+    }
+    else
+    {
+        return enif_make_badarg(env);
+    }
+}
+
+ERL_NIF_TERM deserialize(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+{
+    bhandle* handle;
+    ErlNifBinary bin;
+    if (enif_get_resource(env, argv[0], BLOOM_FILTER_RESOURCE, (void**)&handle) &&
+        enif_inspect_binary(env, argv[1], &bin))
+    {
+        handle->filter->deserialize(bin.data, bin.size);
         return enif_make_atom(env, "ok");
     }
     else

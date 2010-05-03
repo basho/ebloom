@@ -26,7 +26,8 @@
 #include <limits>
 #include <string>
 #include <vector>
-
+#include <sstream>
+#include "serializer.hpp"
 
 static const std::size_t bits_per_char = 0x08;    // 8 bits in 1 char(unsigned)
 static const unsigned char bit_mask[bits_per_char] = {
@@ -274,6 +275,105 @@ public:
    }
 
    const cell_type* table() const { return bit_table_; }
+   
+   
+   inline void serialize(unsigned char* data, unsigned int* len)
+   {
+      unsigned int buf_sz = (sizeof(unsigned char) * (table_size_ / bits_per_char)) + (6 * sizeof(size_t)) + (salt_.size()*sizeof(bloom_type)) + 1000;
+      char *buffer = new char[ buf_sz ];
+      serializer s(buffer, buf_sz);
+
+      s.clear();
+      
+      std::cout << "salt_count_ = " << salt_count_ << std::endl;
+      
+      s << salt_count_;
+      
+      std::cout << "table_size_ = " << table_size_ << std::endl;
+      
+      s << table_size_;
+      s << predicted_element_count_;
+      s << inserted_element_count_;
+      s << random_seed_;
+      s << desired_false_positive_probability_;
+      for(std::vector<bloom_type>::iterator it = salt_.begin(); it != salt_.end(); ++it)
+      {
+         s << *it;
+      }
+      for(std::size_t i=0; i<(table_size_ / bits_per_char); i++) {
+         s << bit_table_[i];
+      }
+      
+      std::cout << " s.length = " << s.length() << " ... " << std::endl;
+      
+      *len = s.length();
+      data = new unsigned char[*len];
+      s.write_to_buffer(reinterpret_cast<char*>(data));
+      
+      /* -- */
+      
+      std::cout << "writing..." << std::endl;
+      std::ofstream o_stream("/tmp/data.txt",std::ios::binary);
+      s.write_to_stream(o_stream);
+      o_stream.close();
+      
+      /* -- */
+      
+      delete[] buffer;
+   }
+
+   inline void deserialize(unsigned char* data, unsigned int len)
+   {
+      //serializer s((char*)data, len);
+      //s.read_from_buffer((char*)data, len);
+      
+      /* -- */
+      
+      std::ifstream i_stream("/tmp/data.txt",std::ios::binary);
+      unsigned int buf_sz = len;
+      char *buffer = new char[buf_sz];
+      serializer s(buffer, buf_sz);
+      s.read_from_stream(i_stream,len);
+      
+      /* -- */
+
+      s.reset();
+      
+      std::cout << "reading 6 params" << std::endl;
+      
+      s >> salt_count_;
+      
+      std::cout << "salt_count_ = " << salt_count_ << std::endl;
+      
+      s >> table_size_;
+      
+      std::cout << "table_size_ = " << table_size_ << std::endl;
+      
+      s >> predicted_element_count_;
+      
+      std::cout << "predicted_element_count_ = " << predicted_element_count_ << std::endl;
+      
+      s >> inserted_element_count_;
+
+      std::cout << "inserted_element_count_ = " << inserted_element_count_ << std::endl;
+      
+      s >> random_seed_;
+      s >> desired_false_positive_probability_;
+        
+      std::cout << "reading salts" << std::endl;
+      
+      for (std::size_t i=0; i<salt_count_; i++) {
+         //std::cout << "reading salt " << i << " ... " << std::endl;
+         s >> salt_[i];
+      }
+      
+      std::cout << "reading table" << std::endl;
+
+      for (std::size_t i=0; i<(table_size_ / bits_per_char); i++) {
+         //std::cout << "reading table entry " << i << " ... " << std::endl;
+         s >> bit_table_[i];
+      }
+   }
 
 protected:
 
