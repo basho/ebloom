@@ -64,7 +64,7 @@ extern "C"
         {"union",         2, filter_union},
         {"difference",    2, filter_difference},
         {"serialize",     1, serialize},
-        {"deserialize",   2, deserialize}
+        {"deserialize",   1, deserialize}
     };
 
     ERL_NIF_INIT(ebloom, nif_funcs, &on_load, NULL, NULL, NULL);
@@ -259,13 +259,15 @@ ERL_NIF_TERM serialize(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 
 ERL_NIF_TERM deserialize(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
-    bhandle* handle;
     ErlNifBinary bin;
-    if (enif_get_resource(env, argv[0], BLOOM_FILTER_RESOURCE, (void**)&handle) &&
-        enif_inspect_binary(env, argv[1], &bin))
+    if (enif_inspect_binary(env, argv[0], &bin))
     {
-        handle->filter->deserialize(bin.data, bin.size);
-        return enif_make_atom(env, "ok");
+        bhandle* handle = (bhandle*)enif_alloc_resource(env, BLOOM_FILTER_RESOURCE,
+                                                        sizeof(bhandle));
+        handle->filter = bloom_filter::deserialize(bin.data, bin.size);
+        ERL_NIF_TERM result = enif_make_resource(env, handle);
+        enif_release_resource(env, handle);
+        return enif_make_tuple2(env, enif_make_atom(env, "ok"), result);
     }
     else
     {
