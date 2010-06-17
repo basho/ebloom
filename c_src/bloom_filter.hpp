@@ -282,7 +282,7 @@ public:
    }
 
 
-   inline void serialize(unsigned char** data, unsigned int* len)
+   inline void serialize(unsigned char** data, size_t* len)
    {
       size_t buf_sz = serialized_size();
       char *buffer = new char[ buf_sz ];
