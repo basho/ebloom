@@ -282,7 +282,7 @@ public:
    }
 
 
-   inline void serialize(unsigned char** data, size_t* len)
+   inline void serialize(unsigned char** data, unsigned int* len)
    {
       size_t buf_sz = serialized_size();
       char *buffer = new char[ buf_sz ];
@@ -318,8 +318,8 @@ public:
       double desired_false_positive_probability_;
       
       serializer s((char*)data, len);
+      s.clear();
       s.read_from_buffer((char*)data, len);
-      s.reset();
       
       s >> salt_count_;
       s >> table_size_;
@@ -327,7 +327,6 @@ public:
       s >> inserted_element_count_;
       s >> random_seed_;
       s >> desired_false_positive_probability_;
-
       bloom_filter* filter = new bloom_filter(predicted_element_count_, 
                           desired_false_positive_probability_,
                           random_seed_);

@@ -245,7 +245,7 @@ ERL_NIF_TERM serialize(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
     {
         ErlNifBinary bin;
         enif_alloc_binary_compat(env, handle->filter->serialized_size(), &bin);
-        handle->filter->serialize(&bin.data, (size_t *)&bin.size);
+        handle->filter->serialize(&bin.data, (unsigned int *)&bin.size);
         return enif_make_binary(env, &bin);
     }
     else
