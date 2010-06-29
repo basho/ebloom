@@ -1,7 +1,7 @@
 {application, ebloom,
  [
   {description, ""},
-  {vsn, "3"},
+  {vsn, "1.0.0"},
   {modules, [
              ebloom
             ]},
