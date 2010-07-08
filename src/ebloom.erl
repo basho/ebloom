@@ -42,9 +42,9 @@
 init() ->
     case code:priv_dir(ebloom) of
         {error, bad_name} ->
-            SoName = filename:join("../priv", ebloom_nifs);
+            SoName = filename:join("../priv", "ebloom_nifs");
         Dir ->
-            SoName = filename:join(Dir, ebloom_nifs)
+            SoName = filename:join(Dir, "ebloom_nifs")
     end,
     erlang:load_nif(SoName, 0).
 
