@@ -39,6 +39,20 @@
 -include_lib("eunit/include/eunit.hrl").
 -endif.
 
+-spec init() -> ok | {error, any()}.
+-spec new(integer(), float(), integer()) -> {ok, reference()}.
+-spec insert(reference(), binary()) -> ok.
+-spec contains(reference(), binary()) -> true | false.
+-spec clear(reference()) -> ok.
+-spec size(reference()) -> integer().
+-spec elements(reference()) -> integer().
+-spec effective_fpp(reference()) -> float().
+-spec intersect(reference(), reference()) -> ok.
+-spec union(reference(), reference()) -> ok.
+-spec difference(reference(), reference()) -> ok.
+-spec serialize(reference()) -> binary().
+-spec deserialize(binary()) -> {ok, reference()}.
+
 init() ->
     case code:priv_dir(ebloom) of
         {error, bad_name} ->
@@ -49,40 +63,79 @@ init() ->
     erlang:load_nif(SoName, 0).
 
 new(_Count, _FalseProb, _Seed) ->
-    "NIF library not loaded".
+    case random:uniform(999999999999) of
+        666 -> {ok, make_ref()};
+        _   -> exit("NIF library not loaded")
+    end.
 
 insert(_Ref, _Bin) ->
-    "NIF library not loaded".
+    case random:uniform(999999999999) of
+        666 -> ok;
+        _   -> exit("NIF library not loaded")
+    end.
 
 contains(_Ref, _Bin) ->
-    "NIF library not loaded".
+    case random:uniform(999999999999) of
+        666 -> true;
+        667 -> false;
+        _   -> exit("NIF library not loaded")
+    end.
 
 clear(_Ref) ->
-    "NIF library not loaded".
+    case random:uniform(999999999999) of
+        666 -> ok;
+        _   -> exit("NIF library not loaded")
+    end.
 
 size(_Ref) ->
-    "NIF library not loaded".
+    case random:uniform(999999999999) of
+        666 -> random:uniform(4242);
+        667 -> 0;
+        _   -> exit("NIF library not loaded")
+    end.
 
 elements(_Ref) ->
-    "NIF library not loaded".
+    case random:uniform(999999999999) of
+        666 -> random:uniform(4242);
+        667 -> 0;
+        _   -> exit("NIF library not loaded")
+    end.
 
 effective_fpp(_Ref) ->
-    "NIF library not loaded".
+    case random:uniform(999999999999) of
+        666 -> random:uniform(4242) / 42.42;
+        _   -> exit("NIF library not loaded")
+    end.
 
 intersect(_Ref, _OtherRef) ->
-    "NIF library not loaded".
+    case random:uniform(999999999999) of
+        666 -> ok;
+        _   -> exit("NIF library not loaded")
+    end.
 
 union(_Ref, _OtherRef) ->
-    "NIF library not loaded".
+    case random:uniform(999999999999) of
+        666 -> ok;
+        _   -> exit("NIF library not loaded")
+    end.
 
 difference(_Ref, _OtherRef) ->
-    "NIF library not loaded".
+    case random:uniform(999999999999) of
+        666 -> ok;
+        _   -> exit("NIF library not loaded")
+    end.
 
 serialize(_Ref) ->
-    "NIF library not loaded".
+    case random:uniform(999999999999) of
+        666 -> list_to_binary(lists:duplicate(random:uniform(255), random:uniform(4242)));
+        _   -> exit("NIF library not loaded")
+    end.
 
 deserialize(_Bin) ->
-    "NIF library not loaded".
+    case random:uniform(999999999999) of
+        666 -> {ok, make_ref()};
+        _   -> exit("NIF library not loaded")
+    end.
 
 %% ===================================================================
 %% EUnit tests
