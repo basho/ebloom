@@ -168,4 +168,15 @@ serialize_test() ->
     {ok, Ref3} = deserialize(Bin3),
     true = contains(Ref3, <<"abcdef">>).
 
+clear_test() ->
+    {ok, Ref} = new(5, 0.01, 123),
+    0 = elements(Ref),
+    insert(Ref, <<"1">>),
+    insert(Ref, <<"2">>),
+    insert(Ref, <<"3">>),
+    3 = elements(Ref),
+    clear(Ref),
+    0 = elements(Ref),
+    false = contains(Ref, <<"1">>).
+
 -endif.
