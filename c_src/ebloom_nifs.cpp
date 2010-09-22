@@ -31,47 +31,47 @@ typedef struct
 
 extern "C"
 {
-    ERL_NIF_TERM new_filter(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
-    ERL_NIF_TERM insert(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
-    ERL_NIF_TERM contains(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+    ERL_NIF_TERM ebloom_new_filter(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+    ERL_NIF_TERM ebloom_insert(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+    ERL_NIF_TERM ebloom_contains(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
 
-    ERL_NIF_TERM clear(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+    ERL_NIF_TERM ebloom_clear(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
 
-    ERL_NIF_TERM size(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
-    ERL_NIF_TERM elements(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
-    ERL_NIF_TERM effective_fpp(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+    ERL_NIF_TERM ebloom_size(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+    ERL_NIF_TERM ebloom_elements(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+    ERL_NIF_TERM ebloom_effective_fpp(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
 
-    ERL_NIF_TERM filter_intersect(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
-    ERL_NIF_TERM filter_union(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
-    ERL_NIF_TERM filter_difference(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+    ERL_NIF_TERM ebloom_filter_intersect(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+    ERL_NIF_TERM ebloom_filter_union(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+    ERL_NIF_TERM ebloom_filter_difference(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
 
-    ERL_NIF_TERM serialize(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
-    ERL_NIF_TERM deserialize(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+    ERL_NIF_TERM ebloom_serialize(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+    ERL_NIF_TERM ebloom_deserialize(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
 
-    void filter_dtor(ErlNifEnv* env, void* arg);
+    void ebloom_filter_dtor(ErlNifEnv* env, void* arg);
 
     int on_load(ErlNifEnv* env, void** priv_data, ERL_NIF_TERM load_info);
 
     static ErlNifFunc nif_funcs[] =
     {
-        {"new",           3, new_filter},
-        {"insert",        2, insert},
-        {"contains",      2, contains},
-        {"clear",         1, clear},
-        {"size",          1, size},
-        {"elements",      1, elements},
-        {"effective_fpp", 1, effective_fpp},
-        {"intersect",     2, filter_intersect},
-        {"union",         2, filter_union},
-        {"difference",    2, filter_difference},
-        {"serialize",     1, serialize},
-        {"deserialize",   1, deserialize}
+        {"new",           3, ebloom_new_filter},
+        {"insert",        2, ebloom_insert},
+        {"contains",      2, ebloom_contains},
+        {"clear",         1, ebloom_clear},
+        {"size",          1, ebloom_size},
+        {"elements",      1, ebloom_elements},
+        {"effective_fpp", 1, ebloom_effective_fpp},
+        {"intersect",     2, ebloom_filter_intersect},
+        {"union",         2, ebloom_filter_union},
+        {"difference",    2, ebloom_filter_difference},
+        {"serialize",     1, ebloom_serialize},
+        {"deserialize",   1, ebloom_deserialize}
     };
 
     ERL_NIF_INIT(ebloom, nif_funcs, &on_load, NULL, NULL, NULL);
 };
 
-ERL_NIF_TERM new_filter(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+ERL_NIF_TERM ebloom_new_filter(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
     long predicted_element_count;
     double false_positive_probability;
@@ -96,7 +96,7 @@ ERL_NIF_TERM new_filter(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
     }
 }
 
-ERL_NIF_TERM insert(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+ERL_NIF_TERM ebloom_insert(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
     ErlNifBinary data;
     bhandle* handle;
@@ -112,7 +112,7 @@ ERL_NIF_TERM insert(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
     }
 }
 
-ERL_NIF_TERM contains(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+ERL_NIF_TERM ebloom_contains(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
     ErlNifBinary data;
     bhandle* handle;
@@ -134,7 +134,7 @@ ERL_NIF_TERM contains(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
     }
 }
 
-ERL_NIF_TERM clear(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+ERL_NIF_TERM ebloom_clear(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
     bhandle* handle;
     if (enif_get_resource(env, argv[0], BLOOM_FILTER_RESOURCE, (void**)&handle))
@@ -148,7 +148,7 @@ ERL_NIF_TERM clear(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
     }
 }
 
-ERL_NIF_TERM size(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+ERL_NIF_TERM ebloom_size(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
     bhandle* handle;
     if (enif_get_resource(env, argv[0], BLOOM_FILTER_RESOURCE, (void**)&handle))
@@ -162,7 +162,7 @@ ERL_NIF_TERM size(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
     }
 }
 
-ERL_NIF_TERM elements(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+ERL_NIF_TERM ebloom_elements(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
     bhandle* handle;
     if (enif_get_resource(env, argv[0], BLOOM_FILTER_RESOURCE, (void**)&handle))
@@ -176,7 +176,7 @@ ERL_NIF_TERM elements(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
     }
 }
 
-ERL_NIF_TERM effective_fpp(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+ERL_NIF_TERM ebloom_effective_fpp(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
     bhandle* handle;
     if (enif_get_resource(env, argv[0], BLOOM_FILTER_RESOURCE, (void**)&handle))
@@ -190,7 +190,7 @@ ERL_NIF_TERM effective_fpp(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
     }
 }
 
-ERL_NIF_TERM filter_intersect(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+ERL_NIF_TERM ebloom_filter_intersect(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
     bhandle* handle;
     bhandle* handle2;
@@ -206,7 +206,7 @@ ERL_NIF_TERM filter_intersect(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[
     }
 }
 
-ERL_NIF_TERM filter_union(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+ERL_NIF_TERM ebloom_filter_union(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
     bhandle* handle;
     bhandle* handle2;
@@ -222,7 +222,7 @@ ERL_NIF_TERM filter_union(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
     }
 }
 
-ERL_NIF_TERM filter_difference(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+ERL_NIF_TERM ebloom_filter_difference(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
     bhandle* handle;
     bhandle* handle2;
@@ -238,7 +238,7 @@ ERL_NIF_TERM filter_difference(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv
     }
 }
 
-ERL_NIF_TERM serialize(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+ERL_NIF_TERM ebloom_serialize(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
     bhandle* handle;
     if (enif_get_resource(env, argv[0], BLOOM_FILTER_RESOURCE, (void**)&handle))
@@ -254,7 +254,7 @@ ERL_NIF_TERM serialize(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
     }
 }
 
-ERL_NIF_TERM deserialize(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+ERL_NIF_TERM ebloom_deserialize(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
     ErlNifBinary bin;
     if (enif_inspect_binary(env, argv[0], &bin))
@@ -272,7 +272,7 @@ ERL_NIF_TERM deserialize(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
     }
 }
 
-void filter_dtor(ErlNifEnv* env, void* arg)
+void ebloom_filter_dtor(ErlNifEnv* env, void* arg)
 {
     bhandle* handle = (bhandle*)arg;
     delete handle->filter;
@@ -282,7 +282,7 @@ int on_load(ErlNifEnv* env, void** priv_data, ERL_NIF_TERM load_info)
 {
     ErlNifResourceFlags flags = (ErlNifResourceFlags)(ERL_NIF_RT_CREATE | ERL_NIF_RT_TAKEOVER);
     BLOOM_FILTER_RESOURCE = enif_open_resource_type_compat(env, "bloom_filter_resource",
-                                                    &filter_dtor,
+                                                    &ebloom_filter_dtor,
                                                     flags,
                                                     0);
     return 0;
