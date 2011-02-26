@@ -56,7 +56,12 @@
 init() ->
     case code:priv_dir(ebloom) of
         {error, bad_name} ->
-            SoName = filename:join("../priv", "ebloom_nifs");
+            case code:which(?MODULE) of
+                Filename when is_list(Filename) ->
+                    SoName = filename:join([filename:dirname(Filename),"../priv", "ebloom_nifs"]);
+                _ ->
+                    SoName = filename:join("../priv", "ebloom_nifs")
+            end;
         Dir ->
             SoName = filename:join(Dir, "ebloom_nifs")
     end,
