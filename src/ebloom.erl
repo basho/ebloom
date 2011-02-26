@@ -54,12 +54,14 @@
 -spec deserialize(binary()) -> {ok, reference()}.
 
 init() ->
-    case code:priv_dir(ebloom) of
-        {error, bad_name} ->
-            SoName = filename:join("../priv", "ebloom_nifs");
-        Dir ->
-            SoName = filename:join(Dir, "ebloom_nifs")
-    end,
+    SoName = case code:priv_dir(ebloom) of
+                 {error, bad_name} ->
+                     Path0 = filename:dirname(code:which(?MODULE)),
+                     Path1 = filename:absname_join(Path0, ".."),
+                     filename:join([Path1, "priv", "ebloom_nifs"]);
+                 Dir ->
+                     filename:join(Dir, "ebloom_nifs")
+             end,
     erlang:load_nif(SoName, 0).
 
 new(_Count, _FalseProb, _Seed) ->
