@@ -171,7 +171,8 @@ serialize_test() ->
     insert(Ref, <<"abcdef">>),
     Bin3 = serialize(Ref),
     {ok, Ref3} = deserialize(Bin3),
-    true = contains(Ref3, <<"abcdef">>).
+    true = contains(Ref3, <<"abcdef">>),
+    false = contains(Ref3, <<"rstuvw">>).
 
 clear_test() ->
     {ok, Ref} = new(5, 0.01, 123),

@@ -278,12 +278,12 @@ public:
    
    inline size_t serialized_size() const 
    {
-     return ((table_size_/bits_per_char)+(6*sizeof(size_t))+(salt_.size()*sizeof(bloom_type)));
+     return ((table_size_/bits_per_char)+(5*sizeof(size_t) + sizeof(double))+(salt_.size()*sizeof(bloom_type)));
    }
-
 
    inline void serialize(unsigned char** data, unsigned int* len)
    {
+      // TODO: Make this format platform independent!
       size_t buf_sz = serialized_size();
       char *buffer = new char[ buf_sz ];
       serializer s(buffer, buf_sz);
@@ -318,8 +318,7 @@ public:
       double desired_false_positive_probability_;
       
       serializer s((char*)data, len);
-      s.clear();
-      s.read_from_buffer((char*)data, len);
+      s.reset();
       
       s >> salt_count_;
       s >> table_size_;
