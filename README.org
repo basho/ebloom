@@ -1,5 +1,7 @@
 * ebloom
 ** Overview
+[[http://travis-ci.org/basho/ebloom][Travis-CI]] :: [[https://secure.travis-ci.org/basho/ebloom.png]]
+
 =ebloom= is a NIF wrapper around a basic bloom filter.
 
 ** Quick Start
