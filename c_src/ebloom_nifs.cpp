@@ -36,6 +36,11 @@ extern "C"
     ERL_NIF_TERM ebloom_contains(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
 
     ERL_NIF_TERM ebloom_clear(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+    
+    ERL_NIF_TERM ebloom_compatible(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+    ERL_NIF_TERM ebloom_predicted_elements(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+    ERL_NIF_TERM ebloom_desired_fpp(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
+    ERL_NIF_TERM ebloom_random_seed(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
 
     ERL_NIF_TERM ebloom_size(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
     ERL_NIF_TERM ebloom_elements(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]);
@@ -54,18 +59,22 @@ extern "C"
 
     static ErlNifFunc nif_funcs[] =
     {
-        {"new",           3, ebloom_new_filter},
-        {"insert",        2, ebloom_insert},
-        {"contains",      2, ebloom_contains},
-        {"clear",         1, ebloom_clear},
-        {"size",          1, ebloom_size},
-        {"elements",      1, ebloom_elements},
-        {"effective_fpp", 1, ebloom_effective_fpp},
-        {"intersect",     2, ebloom_filter_intersect},
-        {"union",         2, ebloom_filter_union},
-        {"difference",    2, ebloom_filter_difference},
-        {"serialize",     1, ebloom_serialize},
-        {"deserialize",   1, ebloom_deserialize}
+        {"new",                3, ebloom_new_filter},
+        {"insert",             2, ebloom_insert},
+        {"contains",           2, ebloom_contains},
+        {"clear",              1, ebloom_clear},
+        {"compatible",         2, ebloom_compatible},
+        {"predicted_elements", 1, ebloom_predicted_elements},
+        {"desired_fpp",        1, ebloom_desired_fpp},
+        {"random_seed",        1, ebloom_random_seed},
+        {"size",               1, ebloom_size},
+        {"elements",           1, ebloom_elements},
+        {"effective_fpp",      1, ebloom_effective_fpp},
+        {"intersect",          2, ebloom_filter_intersect},
+        {"union",              2, ebloom_filter_union},
+        {"difference",         2, ebloom_filter_difference},
+        {"serialize",          1, ebloom_serialize},
+        {"deserialize",        1, ebloom_deserialize}
     };
 
     ERL_NIF_INIT(ebloom, nif_funcs, &on_load, NULL, NULL, NULL);
@@ -141,6 +150,71 @@ ERL_NIF_TERM ebloom_clear(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
     {
         handle->filter->clear();
         return enif_make_atom(env, "ok");
+    }
+    else
+    {
+        return enif_make_badarg(env);
+    }
+}
+
+ERL_NIF_TERM ebloom_compatible(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+{
+    bhandle* handle1;
+    bhandle* handle2;
+    if (enif_get_resource(env, argv[0], BLOOM_FILTER_RESOURCE, (void**)&handle1) &&
+        enif_get_resource(env, argv[1], BLOOM_FILTER_RESOURCE, (void**)&handle2))
+    {
+        if((handle1->filter->predicted_elements() == handle2->filter->predicted_elements()) &&
+                (handle1->filter->desired_fpp() == handle2->filter->desired_fpp()) &&
+                (handle1->filter->random_seed() == handle2->filter->random_seed())) {
+            return enif_make_atom(env, "true");
+        }
+        else
+        {
+            return enif_make_atom(env, "false");
+        }
+    }
+    else
+    {
+        return enif_make_badarg(env);
+    }
+}
+
+ERL_NIF_TERM ebloom_predicted_elements(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+{
+    bhandle* handle;
+    if (enif_get_resource(env, argv[0], BLOOM_FILTER_RESOURCE, (void**)&handle))
+    {
+        long result = handle->filter->predicted_elements();
+        return enif_make_long(env, result);
+    }
+    else
+    {
+        return enif_make_badarg(env);
+    }
+}
+
+ERL_NIF_TERM ebloom_desired_fpp(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+{
+    bhandle* handle;
+    if (enif_get_resource(env, argv[0], BLOOM_FILTER_RESOURCE, (void**)&handle))
+    {
+        double result = handle->filter->desired_fpp();
+        return enif_make_double(env, result);
+    }
+    else
+    {
+        return enif_make_badarg(env);
+    }
+}
+
+ERL_NIF_TERM ebloom_random_seed(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+{
+    bhandle* handle;
+    if (enif_get_resource(env, argv[0], BLOOM_FILTER_RESOURCE, (void**)&handle))
+    {
+        long result = handle->filter->random_seed();
+        return enif_make_long(env, result);
     }
     else
     {
