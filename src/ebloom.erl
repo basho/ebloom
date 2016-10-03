@@ -68,79 +68,40 @@ init() ->
     erlang:load_nif(SoName, 0).
 
 new(_Count, _FalseProb, _Seed) ->
-    case random:uniform(999999999999) of
-        666 -> {ok, make_ref()};
-        _   -> exit("NIF library not loaded")
-    end.
+    erlang:nif_error({error, not_loaded}).
 
 insert(_Ref, _Bin) ->
-    case random:uniform(999999999999) of
-        666 -> ok;
-        _   -> exit("NIF library not loaded")
-    end.
+    erlang:nif_error({error, not_loaded}).
 
 contains(_Ref, _Bin) ->
-    case random:uniform(999999999999) of
-        666 -> true;
-        667 -> false;
-        _   -> exit("NIF library not loaded")
-    end.
+    erlang:nif_error({error, not_loaded}).
 
 clear(_Ref) ->
-    case random:uniform(999999999999) of
-        666 -> ok;
-        _   -> exit("NIF library not loaded")
-    end.
+    erlang:nif_error({error, not_loaded}).
 
 size(_Ref) ->
-    case random:uniform(999999999999) of
-        666 -> random:uniform(4242);
-        667 -> 0;
-        _   -> exit("NIF library not loaded")
-    end.
+    erlang:nif_error({error, not_loaded}).
 
 elements(_Ref) ->
-    case random:uniform(999999999999) of
-        666 -> random:uniform(4242);
-        667 -> 0;
-        _   -> exit("NIF library not loaded")
-    end.
+    erlang:nif_error({error, not_loaded}).
 
 effective_fpp(_Ref) ->
-    case random:uniform(999999999999) of
-        666 -> random:uniform(4242) / 42.42;
-        _   -> exit("NIF library not loaded")
-    end.
+    erlang:nif_error({error, not_loaded}).
 
 intersect(_Ref, _OtherRef) ->
-    case random:uniform(999999999999) of
-        666 -> ok;
-        _   -> exit("NIF library not loaded")
-    end.
+    erlang:nif_error({error, not_loaded}).
 
 union(_Ref, _OtherRef) ->
-    case random:uniform(999999999999) of
-        666 -> ok;
-        _   -> exit("NIF library not loaded")
-    end.
+    erlang:nif_error({error, not_loaded}).
 
 difference(_Ref, _OtherRef) ->
-    case random:uniform(999999999999) of
-        666 -> ok;
-        _   -> exit("NIF library not loaded")
-    end.
+    erlang:nif_error({error, not_loaded}).
 
 serialize(_Ref) ->
-    case random:uniform(999999999999) of
-        666 -> list_to_binary(lists:duplicate(random:uniform(255), random:uniform(4242)));
-        _   -> exit("NIF library not loaded")
-    end.
+    erlang:nif_error({error, not_loaded}).
 
 deserialize(_Bin) ->
-    case random:uniform(999999999999) of
-        666 -> {ok, make_ref()};
-        _   -> exit("NIF library not loaded")
-    end.
+    erlang:nif_error({error, not_loaded}).
 
 %% ===================================================================
 %% EUnit tests
