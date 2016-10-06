@@ -205,6 +205,21 @@ public:
    {
       return table_size_;
    }
+    
+   inline virtual std::size_t predicted_elements() const
+   {
+      return predicted_element_count_;
+   }
+   
+   inline virtual double desired_fpp() const
+   {
+      return desired_false_positive_probability_;
+   }
+   
+   inline virtual std::size_t random_seed() const
+   {
+      return random_seed_;
+   }
 
    inline std::size_t element_count() const
    {

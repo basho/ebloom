@@ -24,6 +24,10 @@
          insert/2,
          contains/2,
          clear/1,
+         compatible/2,
+         predicted_elements/1,
+         desired_fpp/1,
+         random_seed/1,
          size/1,
          elements/1,
          effective_fpp/1,
@@ -44,6 +48,10 @@
 -spec insert(reference(), binary()) -> ok.
 -spec contains(reference(), binary()) -> true | false.
 -spec clear(reference()) -> ok.
+-spec compatible(reference(), reference()) -> true | false.
+-spec predicted_elements(reference()) -> integer().
+-spec desired_fpp(reference()) -> float().
+-spec random_seed(reference()) -> integer().
 -spec size(reference()) -> integer().
 -spec elements(reference()) -> integer().
 -spec effective_fpp(reference()) -> float().
@@ -87,6 +95,30 @@ contains(_Ref, _Bin) ->
     end.
 
 clear(_Ref) ->
+    case random:uniform(999999999999) of
+        666 -> ok;
+        _   -> exit("NIF library not loaded")
+    end.
+    
+compatible(_Ref1, _Ref2) ->
+    case random:uniform(999999999999) of
+        666 -> ok;
+        _   -> exit("NIF library not loaded")
+    end.
+
+predicted_elements(_Ref) ->
+    case random:uniform(999999999999) of
+        666 -> ok;
+        _   -> exit("NIF library not loaded")
+    end.
+    
+desired_fpp(_Ref) ->
+    case random:uniform(999999999999) of
+        666 -> ok;
+        _   -> exit("NIF library not loaded")
+    end.
+    
+random_seed(_Ref) ->
     case random:uniform(999999999999) of
         666 -> ok;
         _   -> exit("NIF library not loaded")
@@ -184,5 +216,22 @@ clear_test() ->
     clear(Ref),
     0 = elements(Ref),
     false = contains(Ref, <<"1">>).
+
+compatibility_test() ->
+    {ok, Ref1} = new(5, 0.01, 123),
+    {ok, Ref2} = new(5, 0.01, 123),
+    {ok, Ref3} = new(6, 0.01, 123),
+    {ok, Ref4} = new(5, 0.02, 123),
+    {ok, Ref5} = new(5, 0.01, 124),
+    true  = compatible(Ref1, Ref2),
+    false = compatible(Ref1, Ref3),
+    false = compatible(Ref1, Ref4),
+    false = compatible(Ref1, Ref5).
+    
+parameter_test() ->
+    {ok, Ref1} = new(5, 0.01, 123),
+    5  = predicted_elements(Ref1),
+    0.01 = desired_fpp(Ref1),
+    123 = random_seed(Ref1).
 
 -endif.
