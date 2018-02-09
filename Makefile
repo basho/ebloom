@@ -1,11 +1,22 @@
-.PHONY: compile test
-
-all: compile test
+.PHONY: compile rel cover test dialyzer
+REBAR=./rebar3
 
 compile:
-	@./rebar compile
+	$(REBAR) compile
 
 clean:
-	./rebar clean
+	$(REBAR) clean
 
-include tools.mk
+cover: test
+	$(REBAR) cover
+
+test: compile
+	$(REBAR) as test do eunit
+
+dialyzer:
+	$(REBAR) dialyzer
+
+xref:
+	$(REBAR) xref
+
+check: test dialyzer xref
